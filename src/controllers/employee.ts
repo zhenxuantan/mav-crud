@@ -1,98 +1,67 @@
 import { RequestHandler } from "express";
-
 import { isEqual } from "lodash";
+import { employee, employeeSchema } from "../models/employee";
+import { db } from "../models";
 
-import { Employee, DEPARTMENT } from "../models/employee";
+const EMPLOYEES = db.employees;
 
-import { employeeSchema } from "../models/validation";
-
-let ID: number = 0;
-const EMPLOYEES: Employee[] = [];
-
-export const createEmployee: RequestHandler = (req, res, next) => {
-  const input = req.body as {
-    name: string;
-    salary: number;
-    department: DEPARTMENT;
-  };
-
-  const validated = employeeSchema.validate({ id: ID, ...input });
-
-  if (validated.error) {
-    throw new Error("400:" + validated.error);
-  } else {
-    const newEmployee = new Employee(
-      ID++,
-      input.name,
-      input.salary,
-      input.department
-    );
-    EMPLOYEES.push(newEmployee);
-    res.status(200).json(newEmployee);
-  }
+export const createEmp: RequestHandler = (req, res) => {
+  const input = req.body as employee;
+  const { value, error } = employeeSchema.validate(input);
+  if (error) return res.status(400).json({ errorMessage: error.message });
+  EMPLOYEES.create(value).then((data) => {
+    res.status(200).json(data);
+  });
 };
 
-export const getEmployees: RequestHandler = (req, res, next) => {
-  res.status(200).json({ employees: EMPLOYEES });
+export const getAllEmp: RequestHandler = (req, res) => {
+  EMPLOYEES.findAll().then((data) => {
+    res.status(200).json({ employees: data });
+  });
 };
 
-export const getEmployee: RequestHandler<{ id: string }> = (req, res, next) => {
-  const empId = +req.params.id;
-  const empIndex = EMPLOYEES.findIndex((emp) => emp.id === empId);
-  if (empIndex < 0) {
-    throw new Error("404:Could not find employee!");
-  }
-  res.json(EMPLOYEES[empIndex]);
+export const getEmp: RequestHandler = (req, res) => {
+  EMPLOYEES.findByPk(+req.params.id)
+    .then((data) => {
+      if (data) return res.status(200).json(data);
+      res.status(404).json({ errorMessage: "Could not find employee!" });
+    })
+    .catch(() => res.status(404).json({ errorMessage: "ID format is wrong!" }));
 };
 
-export const updateEmployee: RequestHandler<{ id: string }> = (
-  req,
-  res,
-  next
-) => {
-  const empId = +req.params.id;
-
-  const input = req.body as {
-    name: string;
-    salary: number;
-    department: DEPARTMENT;
-  };
-
-  const empIndex = EMPLOYEES.findIndex((emp) => emp.id === empId);
-
-  if (empIndex < 0) {
-    throw new Error("404:Could not find employee!");
-  }
-
-  const combinedinput = { ...EMPLOYEES[empIndex], ...input };
-  const validatedUpdate = employeeSchema.validate(combinedinput);
-
-  if (validatedUpdate.error) {
-    throw new Error("400:" + validatedUpdate.error);
-  } else if (isEqual(combinedinput, { ...EMPLOYEES[empIndex] })) {
-    res.sendStatus(304);
-  } else {
-    EMPLOYEES[empIndex] = new Employee(
-      combinedinput.id,
-      combinedinput.name,
-      combinedinput.salary,
-      combinedinput.department
-    );
-
-    res.status(200).json(EMPLOYEES[empIndex]);
-  }
+export const updateEmp: RequestHandler = (req, res) => {
+  const input = req.body as employee;
+  EMPLOYEES.findByPk(+req.params.id).then((data) => {
+    if (data) {
+      const { id, ...rest } = data.toJSON();
+      const { value, error } = employeeSchema.validate({
+        ...rest,
+        ...input,
+      });
+      if (error) {
+        res.status(400).json({ errorMessage: error.message });
+      } else if (isEqual(value, rest)) {
+        res.sendStatus(304);
+      } else {
+        EMPLOYEES.update(input, {
+          where: { id: +req.params.id },
+        }).then(() => {
+          res.status(200).json({ id: +req.params.id, ...value });
+        });
+      }
+    } else {
+      res.status(404).json({ errorMessage: "Could not find employee!" });
+    }
+  });
 };
 
-export const deleteEmployee: RequestHandler = (req, res, next) => {
-  const empId = +req.params.id;
-
-  const empIndex = EMPLOYEES.findIndex((emp) => emp.id === empId);
-
-  if (empIndex < 0) {
-    throw new Error("404:Could not find employee!");
-  }
-
-  EMPLOYEES.splice(empIndex, 1);
-
-  res.status(200).json({ message: "Employee deleted!" });
+export const delEmp: RequestHandler = (req, res) => {
+  EMPLOYEES.destroy({
+    where: { id: +req.params.id },
+  })
+    .then((num) => {
+      if (num >= 1) return res.sendStatus(204);
+      res.status(404).json({ errorMessage: "Could not find employee!" });
+    })
+    .catch(() => res.status(404).json({ errorMessage: "ID format is wrong!" }));
 };

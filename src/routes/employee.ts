@@ -1,23 +1,18 @@
 import { Router } from "express";
 
 import {
-  createEmployee,
-  deleteEmployee,
-  getEmployee,
-  getEmployees,
-  updateEmployee,
+  createEmp,
+  delEmp,
+  getEmp,
+  getAllEmp,
+  updateEmp,
 } from "../controllers/employee";
 
 const router = Router();
-
-router.post("/", createEmployee);
-
-router.get("/", getEmployees);
-
-router.get("/:id", getEmployee);
-
-router.patch("/:id", updateEmployee);
-
-router.delete("/:id", deleteEmployee);
+router.post("/", createEmp);
+router.get("/", getAllEmp);
+router.get("/:id", getEmp);
+router.patch("/:id", updateEmp);
+router.delete("/:id", delEmp);
 
 export default router;
