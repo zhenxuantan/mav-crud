@@ -36,7 +36,11 @@ export const Employees = sequelize.define(
 );
 
 export const employeeSchema = Joi.object({
-  name: Joi.string().alphanum().min(1).max(200).required(),
+  name: Joi.string()
+    .pattern(new RegExp("^[\\w\\-\\s]+$"))
+    .min(1)
+    .max(200)
+    .required(),
   salary: Joi.number().integer().min(0).strict(true).required(),
   department: Joi.string()
     .valid(...Object.values(DEPARTMENT))
