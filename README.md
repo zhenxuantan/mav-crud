@@ -16,6 +16,15 @@ Allows the management of employees
 - **PUT**: `/employee/{emp_id}` Update the employee details with the given id
 - **DELETE**: `/employee/{emp_id}` Delete the employee with the given id
 
+## Libraries and Dependencies
+
+| Library / Dependency | Description                                                    |
+| -------------------- | -------------------------------------------------------------- |
+| TypeScript           | Superset of JavaScript and gives type-checking functionalities |
+| Joi                  | Helps to validate data                                         |
+| Express              | Back end web application framework for Node.js                 |
+| pg                   | For PostgreSQL operations                                      |
+
 ## Version History
 
 - 0.2
