@@ -3,29 +3,29 @@ import { sequelize } from ".";
 import Joi from "joi";
 import DEPARTMENT from "./department";
 
-export interface employee {
-  name: string;
-  salary: number;
+export interface user {
+  username: string;
+  password: string;
   department: DEPARTMENT;
 }
 
-export const Employees = sequelize.define(
-  "employees",
+export const Users = sequelize.define(
+  "users",
   {
-    name: { type: DataTypes.STRING },
-    salary: { type: DataTypes.INTEGER },
+    username: { type: DataTypes.STRING },
+    password: { type: DataTypes.STRING },
     department: { type: DataTypes.ENUM(DEPARTMENT.HR, DEPARTMENT.PS) },
   },
   { timestamps: false }
 );
 
-export const employeeSchema = Joi.object({
-  name: Joi.string()
+export const userSchema = Joi.object({
+  username: Joi.string()
     .pattern(new RegExp("^[\\w\\-\\s]+$"))
     .min(4)
     .max(30)
     .required(),
-  salary: Joi.number().integer().min(0).max(2000000000).strict(true).required(),
+  password: Joi.string().required(),
   department: Joi.string()
     .valid(...Object.values(DEPARTMENT))
     .required(),

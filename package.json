@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon dist/app.js"
+    "start": "nodemon dist/app.js",
+    "migrate": "npx sequelize-cli db:migrate --migrations-path dist/migrations",
+    "undoMigrate": "npx sequelize-cli db:migrate:undo --migrations-path dist/migrations",
+    "genMigrate": "npx sequelize-cli seed:generate --seeders-path src/migrations"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +19,8 @@
     "joi": "^17.6.0",
     "lodash": "^4.17.21",
     "pg": "^8.7.3",
-    "sequelize": "^6.19.0"
+    "sequelize": "^6.19.0",
+    "sequelize-cli": "^6.4.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

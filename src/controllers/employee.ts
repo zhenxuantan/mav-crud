@@ -23,11 +23,11 @@ export const getEmp: RequestHandler = (req, res) => {
   if (req.params.id && isNaN(+req.params.id)) return idFormatError(res);
   EMPLOYEES.findAll({
     order: [["id", "asc"]],
-    where: { id: +req.params.id },
+    where: req.params.id === undefined ? {} : { id: +req.params.id },
   }).then((data) => {
     if (req.params.id)
       return data.length === 1
-        ? res.status(200).json(data)
+        ? res.status(200).json(data[0])
         : res.status(404).json({ errorMessage: "Could not find employee!" });
     return res.status(200).json({ employees: data });
   });
