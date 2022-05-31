@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 import { loginSchema, user, userLogin, userSchema } from "../models/user";
 import { db } from "../models";
-import { isEqual } from "lodash";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const USERS = db.users;
 
@@ -39,23 +39,23 @@ export const getUser: RequestHandler = (req, res) => {
 
 export const compareUser: RequestHandler = (req, res) => {
   const input = req.body as userLogin;
-  USERS.findOne({ where: { username: req.params.username } }).then((data) => {
+  const { value, error } = loginSchema.validate(input);
+  USERS.findOne({ where: { username: input.username } }).then((data) => {
     if (data) {
-      const { id, department, ...rest } = data.toJSON();
-      const { value, error } = loginSchema.validate(input);
-      if (error) {
-        console.log(error);
-        res.status(400).json({ errorMessage: error.message });
-      } else {
-        if (bcrypt.compareSync(value.password, rest.password)) {
-          res.sendStatus(200);
-        } else {
-          res.sendStatus(403);
-        }
-      }
-    } else {
-      res.status(404).json({ errorMessage: "Could not find user!" });
+      const pw = data.toJSON().password;
+      return error
+        ? res.status(400).json({ errorMessage: error.message })
+        : bcrypt.compareSync(value.password, pw)
+        ? res.status(200).json({
+            token: jwt.sign(
+              { username: input.username },
+              process.env.SECRET_KEY as string,
+              { expiresIn: "2h" }
+            ),
+          })
+        : res.sendStatus(403);
     }
+    res.status(404).json({ errorMessage: "Could not find user!" });
   });
 };
 
