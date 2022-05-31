@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  app:
+    container_name: emp_api
+    image: emp_api:0.0.1
+    build: .
+    depends_on:
+      - postgres
+    ports:
+      - "3001:3001"
+
+  postgres:
+    container_name: emp_api_db
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pw
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"

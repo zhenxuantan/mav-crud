@@ -1,6 +1,7 @@
 import { dbConfig } from "../config";
 import { Dialect, Sequelize } from "sequelize";
 import { Employees } from "./employee";
+import { Users } from "./user";
 
 export const sequelize = new Sequelize(
   dbConfig.DB,
@@ -22,4 +23,5 @@ export const db = {
   Sequelize: Sequelize,
   sequelize: sequelize,
   employees: Employees,
+  users: Users,
 };

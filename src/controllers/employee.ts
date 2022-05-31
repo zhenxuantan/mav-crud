@@ -69,6 +69,3 @@ export const delEmp: RequestHandler = (req, res) => {
     res.status(404).json({ errorMessage: "Could not find employee!" });
   });
 };
-
-export const invalidSite: RequestHandler = (req, res) =>
-  res.status(404).json({ errorMessage: "Invalid site!" });
