@@ -3,6 +3,7 @@ import { loginSchema, user, userLogin, userSchema } from "../models/user";
 import { db } from "../models";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "./employee";
 
 const USERS = db.users;
 
@@ -67,4 +68,9 @@ export const delUser: RequestHandler = (req, res) => {
     if (num >= 1) return res.sendStatus(204);
     res.status(404).json({ errorMessage: "Could not find user!" });
   });
+};
+
+export const tokenUser: RequestHandler = (req, res) => {
+  if (!verifyToken(req, res)) return res.status(403).send("Need log in.");
+  return res.sendStatus(200);
 };
