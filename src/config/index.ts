@@ -1,5 +1,5 @@
 export const dbConfig = {
-  HOST: "localhost",
+  HOST: "db",
   USER: "postgres",
   PASSWORD: "pw",
   DB: "postgres",

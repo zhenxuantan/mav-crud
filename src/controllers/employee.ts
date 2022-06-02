@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import { Request, RequestHandler } from "express";
 import { isEqual } from "lodash";
 import { employee, employeeSchema } from "../models/employee";
 import { db } from "../models";
@@ -11,8 +11,8 @@ const idFormatError = (res: any) =>
     errorMessage: "The ID format is wrong!",
   });
 
-export const verifyToken = (req: any, res: any) => {
-  const token = req.headers["x-access-token"];
+export const verifyToken = (req: Request, res: any) => {
+  const token = req.cookies.token || "";
   try {
     jwt.verify(token as string, process.env.SECRET_KEY as string);
     return true;

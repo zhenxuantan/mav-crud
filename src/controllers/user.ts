@@ -44,17 +44,16 @@ export const compareUser: RequestHandler = (req, res) => {
   USERS.findOne({ where: { username: input.username } }).then((data) => {
     if (data) {
       const pw = data.toJSON().password;
-      return error
-        ? res.status(400).json({ errorMessage: error.message })
-        : bcrypt.compareSync(value.password, pw)
-        ? res.status(200).json({
-            token: jwt.sign(
-              { username: input.username },
-              process.env.SECRET_KEY as string,
-              { expiresIn: "2h" }
-            ),
-          })
-        : res.sendStatus(403);
+      if (error) return res.status(400).json({ errorMessage: error.message });
+      if (!bcrypt.compareSync(value.password, pw)) return res.sendStatus(403);
+      const token = jwt.sign(
+        { username: input.username },
+        process.env.SECRET_KEY as string,
+        { expiresIn: "2h" }
+      );
+      return res
+        .cookie("token", token, { httpOnly: true, maxAge: 7200000 })
+        .sendStatus(200);
     }
     res.status(404).json({ errorMessage: "Could not find user!" });
   });
@@ -74,3 +73,6 @@ export const tokenUser: RequestHandler = (req, res) => {
   if (!verifyToken(req, res)) return res.status(403).send("Need log in.");
   return res.sendStatus(200);
 };
+
+export const logoutUser: RequestHandler = (req, res) =>
+  res.clearCookie("token").sendStatus(200);

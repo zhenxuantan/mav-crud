@@ -1,4 +1,3 @@
-import cors from "cors";
 import { Router } from "express";
 import {
   createUser,
@@ -6,11 +5,12 @@ import {
   compareUser,
   delUser,
   tokenUser,
+  logoutUser,
 } from "../controllers/user";
 
 const router = Router();
-router.use(cors({ origin: "http://localhost:3000" }));
 router.post("/login", compareUser);
+router.post("/logout", logoutUser);
 router.post("/", createUser);
 router.get("/token", tokenUser);
 router.get("/:username?", getUser);

@@ -1,20 +1,26 @@
-version: "3.8"
+version: "3.7"
 services:
   app:
-    container_name: emp_api
-    image: emp_api:0.0.1
+    container_name: employee_api
     build: .
-    depends_on:
-      - postgres
+    restart: always
     ports:
       - "3001:3001"
-
-  postgres:
-    container_name: emp_api_db
-    image: postgres:14.1-alpine
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/app
+  db:
+    container_name: postgres-employees-api
+    image: postgres:12.6-alpine
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=pw
-      - POSTGRES_DB=postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pw
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
+    volumes:
+      - data:/lib/db
+
+volumes:
+  data: {}
