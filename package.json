@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && npx sequelize db:migrate --migrations-path dist/migrations && nodemon dist/app.js",
+    "start": "yarn run build && npx sequelize db:migrate --migrations-path dist/migrations && nodemon dist/app.js",
     "undoMigrate": "npx sequelize-cli db:migrate:undo --migrations-path dist/migrations",
     "genMigrate": "npx sequelize-cli seed:generate --seeders-path src/migrations"
   },
